@@ -15,3 +15,4 @@ class Config:
         self.rtsp_password = 'admin'
         self.stream_url = 'unicast'
         self.publish_progress = False
+        self.pass_gen_threads = 8
