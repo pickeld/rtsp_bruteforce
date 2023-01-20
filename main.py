@@ -1,6 +1,6 @@
 from config import Config
-from rtsp_brute_force import  RTSPBruteForce
-from password_generator import PasswordGenerator
+from src.rtsp_brute_force import  RTSPBruteForce
+from src.password_generator import PasswordGenerator
 
 if __name__ == '__main__':
     configs = Config()
