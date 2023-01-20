@@ -1,0 +1,41 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="23">
+            <item index="0" class="java.lang.String" itemvalue="getdevinfo" />
+            <item index="1" class="java.lang.String" itemvalue="RabbitClient" />
+            <item index="2" class="java.lang.String" itemvalue="ec2_metadata" />
+            <item index="3" class="java.lang.String" itemvalue="python-dotenv" />
+            <item index="4" class="java.lang.String" itemvalue="psutil" />
+            <item index="5" class="java.lang.String" itemvalue="jinja2" />
+            <item index="6" class="java.lang.String" itemvalue="awsclient" />
+            <item index="7" class="java.lang.String" itemvalue="func_timeout" />
+            <item index="8" class="java.lang.String" itemvalue="python-registry" />
+            <item index="9" class="java.lang.String" itemvalue="light-logger" />
+            <item index="10" class="java.lang.String" itemvalue="pyudev" />
+            <item index="11" class="java.lang.String" itemvalue="retry" />
+            <item index="12" class="java.lang.String" itemvalue="KinesisClient" />
+            <item index="13" class="java.lang.String" itemvalue="light-api-client" />
+            <item index="14" class="java.lang.String" itemvalue="light-azure-credentials" />
+            <item index="15" class="java.lang.String" itemvalue="googleapiclient" />
+            <item index="16" class="java.lang.String" itemvalue="google" />
+            <item index="17" class="java.lang.String" itemvalue="azure-mgmt-servicebus" />
+            <item index="18" class="java.lang.String" itemvalue="pydantic" />
+            <item index="19" class="java.lang.String" itemvalue="light-snap-assets" />
+            <item index="20" class="java.lang.String" itemvalue="jq" />
+            <item index="21" class="java.lang.String" itemvalue="light-data-models" />
+            <item index="22" class="java.lang.String" itemvalue="gevent" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+  </profile>
+</component>
