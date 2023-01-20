@@ -45,7 +45,9 @@ class PasswordGenerator:
         else:
             return response
 
-    def base64encode(self, password, username):
+    def base64encode(self):
+        username = self.config.rtsp_username
+        password = self.config.rtsp_password
         credentials = f'{password}:{username}'
         credentials_bytes = credentials.encode('ascii')
         base64_bytes = base64.b64encode(credentials_bytes)
@@ -55,12 +57,9 @@ class PasswordGenerator:
 
     def brute_force_rtsp(self):
         try:
-            username = self.config.rtsp_username
-            password = self.config.rtsp_password
-
-            address = f'rtsp://{username}:{password}@{self.config.rtsp_ip}/{self.config.stream_url}'
-            dest = "DESCRIBE " + address + " RTSP/1.0\r\nCSeq: 2\r\nUser-Agent: python\r\nAccept: application/sdp\r\n\r\n"
-            print(address)
+            b64 = self.base64encode()
+            dest = f"DESCRIBE rtsp://{self.config.rtsp_ip}:{self.config.rtsp_port}/unicast RTSP/1.0\r\nCSeq: 2\r\nAuthorization: Basic {b64}\r\n\r\n"
+            # print(address)
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((self.config.rtsp_ip, self.config.rtsp_port))
             s.send(dest.encode())
@@ -70,8 +69,6 @@ class PasswordGenerator:
         except (ConnectionRefusedError, ConnectionResetError) as e:
             print(
                 f'{e}: {self.config.rtsp_ip}:{self.config.rtsp_port} - {self.config.rtsp_username}:{self.config.rtsp_password}')
-        except os.error.errno(113):
-            print('s')
         except Exception as e:
             print(e)
 
