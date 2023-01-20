@@ -6,5 +6,6 @@ if __name__ == '__main__':
     if configs.generate_paswords:
         pass_gen = PasswordGenerator()
         pass_gen.password_gen_orch()
-    brute_forcer = RTSPBruteForce()
-    brute_forcer.run()
+    if configs.brute_force:
+        brute_forcer = RTSPBruteForce()
+        brute_forcer.run()
