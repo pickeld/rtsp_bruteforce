@@ -7,4 +7,4 @@ if __name__ == '__main__':
         pass_gen = PasswordGenerator()
         pass_gen.password_gen_orch()
     brute_forcer = RTSPBruteForce()
-    brute_forcer.brute_force_rtsp()
+    brute_forcer.run()

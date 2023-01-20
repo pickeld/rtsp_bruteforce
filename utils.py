@@ -1,9 +1,9 @@
 import base64
 import itertools
 import os
+import re
 import socket
 import threading
-import time
 from pathlib import Path
 
 from config import Config
@@ -74,14 +74,11 @@ class RTSPBruteForce:
         passwords = os.listdir(self.config.passwords_dir)
         return passwords
 
-
-    def brute_force_rtsp(self):
+    def run(self):
         files = self.get_pass_files()
-        for file in files:
-            print(file)
-            pass
-
-
+        files.sort(key=lambda f: int(re.sub('\D', '', f)))
+        for filename in files:
+            print(filename)
 
     def create_conn(self):
         try:
