@@ -1,10 +1,9 @@
 import base64
-import itertools
-import os.path
 import socket
-from password_gen import PasswordGenerator
 
 from config import Config
+from password_gen import PasswordGenerator
+
 pass_gen = PasswordGenerator()
 
 
@@ -48,9 +47,6 @@ class RTSPBruteForce:
                 f'{e}: {self.config.rtsp_ip}:{self.config.rtsp_port} - {self.config.rtsp_username}:{self.config.rtsp_password}')
         except Exception as e:
             print(e)
-
-
-
 
 
 if __name__ == '__main__':
