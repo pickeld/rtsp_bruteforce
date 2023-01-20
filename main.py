@@ -15,13 +15,13 @@ class RTSPBruteForce:
         self.symbols = self.config.symbols
         self.length = self.config.length
 
-    def get_response(self, response):
+    def digest_response(self, response):
         if '200 OK' in str(response):
-            return '200 OK'
+            return True, '200 OK'
         elif '401 Unauthorized' in str(response):
-            return '401 Unauthorized'
+            return False, '401 Unauthorized'
         else:
-            return response
+            return False, response
 
     def base64encode(self):
         username = self.config.rtsp_username
@@ -39,7 +39,7 @@ class RTSPBruteForce:
             s.connect((self.config.rtsp_ip, self.config.rtsp_port))
             s.send(dest.encode())
             response = s.recv(512)
-            print(self.get_response(response))
+            print(self.digest_response(response))
         except socket.error as e:
             print(e)
         except (ConnectionRefusedError, ConnectionResetError) as e:
@@ -53,6 +53,6 @@ if __name__ == '__main__':
     configs = Config()
     if configs.generate_paswords:
         pass_gen = PasswordGenerator()
-        pass_gen.generate_password_dict()
-    brute_forcer = RTSPBruteForce()
-    brute_forcer.brute_force_rtsp()
+        pass_gen.password_gen_orch()
+    # brute_forcer = RTSPBruteForce(config=configs)
+    # brute_forcer.brute_force_rtsp()
