@@ -4,7 +4,6 @@ import os
 import re
 import socket
 import time
-from threading import Thread
 
 from config import Config
 
@@ -16,25 +15,7 @@ class RTSPBruteForce:
         self.digits = self.config.digits
         self.symbols = self.config.symbols
         self.length = self.config.length
-        self.running_tasks = []
-        Thread(target=self.print_res).start()
-
-    def print_res(self):
-        match = False
-        while not match:
-            try:
-                print(f'running tasks: {len(self.running_tasks)}')
-                for task in self.running_tasks:
-                    if task.done():
-                        if task.result() and task.result()[0]:
-                            print(task.result())
-                            match = True
-                        self.running_tasks.remove(task)
-                time.sleep(2)
-            except Exception as e:
-                print(e)
-
-
+        self.active_tasks = []
 
     def digest_response(self, response, password):
         if '200 OK' in str(response) or password == self.config.debug_password:
@@ -57,18 +38,22 @@ class RTSPBruteForce:
         passwords = os.listdir(self.config.passwords_dir)
         return passwords
 
+    def run_task(self, bulk):
+        print('a')
+        # concurrent.futures.ThreadPoolExecutor.submit(self.create_conn, bulk)
+        concurrent.futures.Executor(self.create_conn, bulk)
+        # with concurrent.futures.ThreadPoolExecutor() as self.executor:
+        # self.active_tasks.append(self.executor.submit()
+
     def tasks_orchestrator(self, passwords):
-        bulker = []
+        bulk = []
         for password in passwords:
-            bulker.append(password)
-            print(len(bulker))
-            while len(self.running_tasks) >= self.config.concurent_workers:
+            while len(self.active_tasks) >= self.config.concurent_workers:
                 time.sleep(3)
-            if len(bulker) >= self.config.bf_bulker:
-                with concurrent.futures.ThreadPoolExecutor() as self.executor:
-                    print('adding task')
-                    self.running_tasks.append(self.executor.submit(self.create_conn, bulker))
+            if len(bulk) >= self.config.bf_bulker_limit:
+                self.run_task(bulk=bulk)
                 bulker = []
+            bulk.append(password)
 
     def run(self):
         files = self.get_pass_files()

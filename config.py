@@ -17,6 +17,6 @@ class Config:
         self.pass_gen_threads = 8
         self.brute_force = True
         # self.brute_force = False
-        self.bf_bulker = 500
-        self.debug_password= 'aa1aA'
+        self.bf_bulker_limit = 1000
+        self.debug_password= 'aacba'
         self.concurent_workers = 5
